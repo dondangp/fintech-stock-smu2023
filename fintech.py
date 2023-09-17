@@ -1,4 +1,7 @@
-import streamlit as st, pandas as pd, numpy as np, yfinance as yf
+import streamlit as st
+import pandas as pd
+import numpy as np
+import yfinance as yf
 import plotly.express as px
 
 st.title('Stock Dashboard')
@@ -12,7 +15,9 @@ data = yf.download(ticker, start=start_date, end=end_date)
 fig = px.line(data, x=data.index, y=data['Adj Close'], title=ticker)
 st.plotly_chart(fig)
 
-pricing_data, fundamental_data, news, openai1 = st.tabs(["Pricing Data", "Fundamental Data", "Top 10 News", "OpenAI ChatGPT"])
+pricing_data, fundamental_data, news, openai1, stock_comparison = st.tabs(
+    ["Pricing Data", "Fundamental Data", "Top 10 News", "OpenAI ChatGPT", "Stock Comparison"])
+
 
 with pricing_data:
     st.header('Price Movements')
@@ -79,3 +84,34 @@ with openai1:
     with swot_analysis:
         st.subheader(f'SWOT Analysis of {ticker} Stock')
         st.write(swot['message'])
+    with stock_comparison:
+    # Stock Comparison feature:
+        st.header("Stock Comparison")
+        selected_tickers = st.multiselect(
+        'Select stocks for comparison', 
+        ['TSLA', 'AAPL', 'AMZN', 'MSFT', 'GOOGL'], 
+        default=['TSLA', 'AAPL']
+    )
+
+    comparison_data = {}
+    for t in selected_tickers:
+        comparison_data[t] = yf.download(t, start=start_date, end=end_date)
+
+    comparison_fig = px.line(title='Stock Comparison')
+    for t, d in comparison_data.items():
+        comparison_fig.add_scatter(x=d.index, y=d['Adj Close'], name=t)
+    st.plotly_chart(comparison_fig)
+
+    comparison_metrics = {}
+    for t, d in comparison_data.items():
+        daily_return = d['Adj Close'] / d['Adj Close'].shift(1) - 1
+        annual_return = daily_return.mean() * 252
+        stdev = np.std(daily_return) * np.sqrt(252)
+        comparison_metrics[t] = {
+            'Annual Return': annual_return,
+            'Standard Deviation': stdev,
+            'Risk Adj. Return': annual_return / stdev
+        }
+
+    comparison_df = pd.DataFrame(comparison_metrics).T
+    st.table(comparison_df)
