@@ -25,8 +25,9 @@ start_date = st.sidebar.date_input('Start Date')
 end_date = st.sidebar.date_input('End Date')
 
 # Download stock data
-data = yf.download(ticker, start=start_date, end=end_date)
-fig = px.line(data, x=data.index, y=data['Adj Close'], title=ticker)
+data = yf.download(ticker, start=start_date, end=end_date).reset_index()
+fig = px.line(data, x='Date', y='Adj Close', title=ticker)
+fig = px.line(data, x=data.index.name, y='Adj Close', title=ticker)
 fig.update_traces(line=dict(color='red'))
 st.plotly_chart(fig)
 
