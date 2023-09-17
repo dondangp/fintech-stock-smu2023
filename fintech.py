@@ -9,6 +9,7 @@ import plotly.express as px
 from alpha_vantage.fundamentaldata import FundamentalData
 from stocknews import StockNews
 
+
 # Load environment variables
 load_dotenv('./env')
 
@@ -26,6 +27,7 @@ end_date = st.sidebar.date_input('End Date')
 # Download stock data
 data = yf.download(ticker, start=start_date, end=end_date)
 fig = px.line(data, x=data.index, y=data['Adj Close'], title=ticker)
+fig.update_traces(line=dict(color='red'))
 st.plotly_chart(fig)
 
 # Tabs

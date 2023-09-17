@@ -1,7 +1,7 @@
 import requests
 import pandas
 
-ZETA_VALLEY_URL='http://127.0.0.1:3000'
+ZETA_VALLEY_URL='http://34.174.177.23'
         
 def format_output(data):
     if isinstance(data, list):
