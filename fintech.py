@@ -11,7 +11,7 @@ from stocknews import StockNews
 
 
 # Load environment variables
-load_dotenv('./env')
+load_dotenv()
 
 # Retrieve API keys from .env file
 alpha_vantage_key = os.getenv('ALPHA_VANTAGE_KEY')
