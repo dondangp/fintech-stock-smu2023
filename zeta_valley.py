@@ -35,6 +35,17 @@ def get_balance_sheet_annual(ticker):
     annualReports = data['annualReports']
     return (format_output(annualReports), ticker)
 
+def get_income_statement_annual(ticker):
+    url = f'{ZETA_VALLEY_URL}/{ticker}/incomestatement'
+    req = requests.get(url)
+
+    if req.status_code != 200:
+        raise Exception('Zeta Valley Error')
+
+    data = req.json()
+    annualReports = data['annualReports']
+    return (format_output(annualReports), ticker)
+
 def get_cash_flow_annual(ticker):
     url = f'{ZETA_VALLEY_URL}/{ticker}/cashflow'
     req = requests.get(url)
@@ -61,4 +72,4 @@ if __name__ == '__main__':
     # print(balance_sheet)
     # print(balance_sheet[0])
 
-    print(get_cash_flow_annual('TSLA'))
+    print(get_income_statement_annual('TSLA'))
