@@ -5,38 +5,49 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 import plotly.express as px
-load_dotenv()
+from alpha_vantage.fundamentaldata import FundamentalData
+from stocknews import StockNews
+
+# Load environment variables
+load_dotenv('./env')
+
+# Retrieve API keys from .env file
 alpha_vantage_key = os.getenv('ALPHA_VANTAGE_KEY')
-session_token = os.getenv('SESSION_TOKEN')
+
+# Streamlit app
 st.title('Stock Dashboard')
 
+# Sidebar inputs
 ticker = st.sidebar.text_input('Ticker', value='TSLA')
 start_date = st.sidebar.date_input('Start Date')
 end_date = st.sidebar.date_input('End Date')
 
+# Download stock data
 data = yf.download(ticker, start=start_date, end=end_date)
 fig = px.line(data, x=data.index, y=data['Adj Close'], title=ticker)
 st.plotly_chart(fig)
 
-pricing_data, fundamental_data, news, openai1, stock_comparison = st.tabs(
-    ["Pricing Data", "Fundamental Data", "Top 10 News", "OpenAI ChatGPT", "Stock Comparison"])
+# Tabs
+pricing_data, fundamental_data, news, stock_comparison = st.tabs(
+    ["Pricing Data", "Fundamental Data", "Top 10 News", "Stock Comparison"]
+)
 
-
+# Pricing Data tab
 with pricing_data:
     st.header('Price Movements')
-    data2 = data
+    data2 = data.copy()
     data2['% Change'] = data['Adj Close'] / data['Adj Close'].shift(1) - 1
-    data2.dropna(inplace = True)
+    data2.dropna(inplace=True)
     st.write(data2)
-    annual_return = data2['% Change'].mean()*252*100
+    annual_return = data2['% Change'].mean() * 252 * 100
     st.write('Annual Return is ', annual_return, '%')
     stdev = np.std(data2['% Change']) * np.sqrt(252)
-    st.write('Standard Deviation is ', stdev*100, '%')
-    st.write('Risk Adj. Return is', annual_return/(stdev*100))
+    st.write('Standard Deviation is ', stdev * 100, '%')
+    st.write('Risk Adj. Return is', annual_return / (stdev * 100))
 
-from alpha_vantage.fundamentaldata import FundamentalData
+# Fundamental Data tab
 with fundamental_data:
-    fd = FundamentalData(alpha_vantage_key,output_format = 'pandas')
+    fd = FundamentalData(alpha_vantage_key, output_format='pandas')
     st.subheader('Balance Sheet')
     balance_sheet = fd.get_balance_sheet_annual(ticker)[0]
     bs = balance_sheet.T[2:]
@@ -52,45 +63,28 @@ with fundamental_data:
     cf = cash_flow.T[2:]
     cf.columns = list(cash_flow.T.iloc[0])
     st.write(cf)
-from stocknews import StockNews
+
+# Top 10 News tab
 with news:
     st.header(f'News of {ticker}')
     sn = StockNews(ticker, save_news=False)
     df_news = sn.read_rss()
     for i in range(10):
-        st.subheader(f'News {i+1}')
+        st.subheader(f'News {i + 1}')
         st.write(df_news['published'].iloc[i])
         st.write(df_news['title'].iloc[i])
         st.write(df_news['summary'].iloc[i])
         title_sentiment = df_news['sentiment_title'][i]
-        st.write(f'Title Sentiment {title_sentiment}')
+        st.write(f'Title Sentiment: {title_sentiment}')
         news_sentiment = df_news['sentiment_summary'][i]
-        st.write(f'News Sentiment {news_sentiment}')
+        st.write(f'News Sentiment: {news_sentiment}')
 
-from pyChatGPT import ChatGPT
-api2 = ChatGPT(session_token)
-buy = api2.send_message(f'3 Reasons to buy {ticker} stock')
-sell = api2.send_message(f'3 Reasons to sell {ticker} stock')
-swot = api2.send_message(f'SWOT analysis of {ticker} stock')
-
-with openai1:
-    buy_reason, sell_reason, swot_analysis = st.tabs(['3 Reasons to buy', '3 Reasons to sell', 'SWOT analysis'])
-    
-    with buy_reason:
-        st.subheader(f'3 reasons on why to BUY {ticker} Stock')
-        st.write(buy['message'])
-    with sell_reason:
-        st.subheader(f'3 reasons on why to SELL {ticker} Stock')
-        st.write(sell['message'])
-    with swot_analysis:
-        st.subheader(f'SWOT Analysis of {ticker} Stock')
-        st.write(swot['message'])
-    with stock_comparison:
-    # Stock Comparison feature:
-        st.header("Stock Comparison")
-        selected_tickers = st.multiselect(
-        'Select stocks for comparison', 
-        ['TSLA', 'AAPL', 'AMZN', 'MSFT', 'GOOGL'], 
+# Stock Comparison tab
+with stock_comparison:
+    st.header("Stock Comparison")
+    selected_tickers = st.multiselect(
+        'Select stocks for comparison',
+        ['TSLA', 'AAPL', 'AMZN', 'MSFT', 'GOOGL'],
         default=['TSLA', 'AAPL']
     )
 
