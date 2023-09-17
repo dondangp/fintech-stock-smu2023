@@ -30,7 +30,7 @@ load_dotenv()
 alpha_vantage_key = os.getenv('ALPHA_VANTAGE_KEY')
 
 # Streamlit app
-st.title('Stock Dashboard')
+st.title('Stocklit Dashboard')
 
 # Sidebar inputs
 ticker = st.sidebar.text_input('Ticker', value='TSLA')
