@@ -47,7 +47,7 @@ with pricing_data:
 
 # Fundamental Data tab
 with fundamental_data:
-    fd = FundamentalData(alpha_vantage_key, output_format='pandas')
+    fd = FundamentalData(key=alpha_vantage_key, output_format='pandas')
     st.subheader('Balance Sheet')
     balance_sheet = fd.get_balance_sheet_annual(ticker)[0]
     bs = balance_sheet.T[2:]
