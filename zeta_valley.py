@@ -1,7 +1,8 @@
 import requests
 import pandas
+import os
 
-ZETA_VALLEY_URL='http://34.174.177.23'
+ZETA_VALLEY_URL = os.getenv('ZETA_VALLEY_URI', 'http://localhost:3000')
         
 def format_output(data):
     if isinstance(data, list):
@@ -58,7 +59,6 @@ def get_cash_flow_annual(ticker):
     return (format_output(annualReports), ticker)
 
 if __name__ == '__main__':
-    # import os
     # from alpha_vantage.fundamentaldata import FundamentalData
     # Load environment variables
     # from dotenv import load_dotenv
