@@ -2,7 +2,7 @@ import requests
 import pandas
 
 ZETA_VALLEY_URL='http://127.0.0.1:3000'
-
+        
 def format_output(data):
     if isinstance(data, list):
         # If the call returns a list, then we will append them

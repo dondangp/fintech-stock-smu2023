@@ -30,7 +30,7 @@ st.plotly_chart(fig)
 
 # Tabs
 pricing_data, fundamental_data, news, stock_comparison = st.tabs(
-    ["Pricing Data", "Fundamental Data", "Top 10 News", "Stock Comparison"]
+    ["Pricing Data", "Fundamental Data", "Trending News", "Stock Comparison"]
 )
 
 # Pricing Data tab
@@ -60,10 +60,10 @@ with fundamental_data:
     is1.columns = list(income_statement.T.iloc[0])
     st.write(is1)
     st.subheader('Cash Flow Statement')
-    # cash_flow = fd.get_cash_flow_annual(ticker)[0]
-    # cf = cash_flow.T[2:]
-    # cf.columns = list(cash_flow.T.iloc[0])
-    # st.write(cf)
+    cash_flow = zv.get_cash_flow_annual(ticker)[0]  # Corrected the typo here
+    cf = cash_flow.T[2:]
+    cf.columns = list(cash_flow.T.iloc[0])
+    st.write(cf)
 
 # Top 10 News tab
 with news:
