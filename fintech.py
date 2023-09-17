@@ -12,7 +12,7 @@ data = yf.download(ticker, start=start_date, end=end_date)
 fig = px.line(data, x=data.index, y=data['Adj Close'], title=ticker)
 st.plotly_chart(fig)
 
-pricing_data, fundamental_data, news = st.tabs(["Pricing Data", "Fundamental Data", "Top 10 News"])
+pricing_data, fundamental_data, news, openai1 = st.tabs(["Pricing Data", "Fundamental Data", "Top 10 News", "OpenAI ChatGPT"])
 
 with pricing_data:
     st.header('Price Movements')
@@ -28,7 +28,7 @@ with pricing_data:
 
 from alpha_vantage.fundamentaldata import FundamentalData
 with fundamental_data:
-    key = '2FQXZ18IVQSNWIMQ'
+    key = 'FD19ATE7G5C0SFC5'
     fd = FundamentalData(key,output_format = 'pandas')
     st.subheader('Balance Sheet')
     balance_sheet = fd.get_balance_sheet_annual(ticker)[0]
@@ -60,5 +60,22 @@ with news:
         news_sentiment = df_news['sentiment_summary'][i]
         st.write(f'News Sentiment {news_sentiment}')
 
+from pyChatGPT import ChatGPT
+session_token = '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'
+api2 = ChatGPT(session_token)
+buy = api2.send_message(f'3 Reasons to buy {ticker} stock')
+sell = api2.send_message(f'3 Reasons to sell {ticker} stock')
+swot = api2.send_message(f'SWOT analysis of {ticker} stock')
 
-
+with openai1:
+    buy_reason, sell_reason, swot_analysis = st.tabs(['3 Reasons to buy', '3 Reasons to sell', 'SWOT analysis'])
+    
+    with buy_reason:
+        st.subheader(f'3 reasons on why to BUY {ticker} Stock')
+        st.write(buy['message'])
+    with sell_reason:
+        st.subheader(f'3 reasons on why to SELL {ticker} Stock')
+        st.write(sell['message'])
+    with swot_analysis:
+        st.subheader(f'SWOT Analysis of {ticker} Stock')
+        st.write(swot['message'])
