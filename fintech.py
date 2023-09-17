@@ -10,7 +10,6 @@ alpha_vantage_key = os.getenv('ALPHA_VANTAGE_KEY')
 session_token = os.getenv('SESSION_TOKEN')
 st.title('Stock Dashboard')
 
-# Setting default value to TSLA (Tesla)
 ticker = st.sidebar.text_input('Ticker', value='TSLA')
 start_date = st.sidebar.date_input('Start Date')
 end_date = st.sidebar.date_input('End Date')
