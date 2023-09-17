@@ -1,9 +1,13 @@
+import os
+from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 import numpy as np
 import yfinance as yf
 import plotly.express as px
-
+load_dotenv()
+alpha_vantage_key = os.getenv('ALPHA_VANTAGE_KEY')
+session_token = os.getenv('SESSION_TOKEN')
 st.title('Stock Dashboard')
 
 # Setting default value to TSLA (Tesla)
@@ -33,8 +37,7 @@ with pricing_data:
 
 from alpha_vantage.fundamentaldata import FundamentalData
 with fundamental_data:
-    key = 'FD19ATE7G5C0SFC5'
-    fd = FundamentalData(key,output_format = 'pandas')
+    fd = FundamentalData(alpha_vantage_key,output_format = 'pandas')
     st.subheader('Balance Sheet')
     balance_sheet = fd.get_balance_sheet_annual(ticker)[0]
     bs = balance_sheet.T[2:]
@@ -66,7 +69,6 @@ with news:
         st.write(f'News Sentiment {news_sentiment}')
 
 from pyChatGPT import ChatGPT
-session_token = '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'
 api2 = ChatGPT(session_token)
 buy = api2.send_message(f'3 Reasons to buy {ticker} stock')
 sell = api2.send_message(f'3 Reasons to sell {ticker} stock')
